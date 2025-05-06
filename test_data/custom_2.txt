@@ -1,0 +1,24 @@
+4
+07:30 10:00
+15
+07:27 1 Ivan
+08:00 1 Ivan
+08:05 1 Olga
+08:10 2 Ivan 1
+08:15 2 Olga 2
+08:20 1 Petr
+08:21 3 Petr
+08:25 1 Anna
+08:26 3 Anna
+08:30 4 Ivan
+08:31 12 Petr 1
+08:35 2 Petr 3
+08:40 4 Olga
+08:41 12 Anna 2
+08:45 4 Petr
+08:50 4 Anna
+09:00 1 Sergey
+09:05 2 Sergey 1
+09:10 1 Elena
+09:11 2 Elena 2
+09:30 4 Sergey
