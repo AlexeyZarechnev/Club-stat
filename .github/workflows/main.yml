@@ -2,67 +2,78 @@ name: CMake Build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ master ]
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
-  build:
+  linux-clang:
+    runs-on: ubuntu-latest
+    
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
         build_type: [Debug, Release]
-        include:
-          - os: ubuntu-latest
-            cc: clang
-            cxx: clang++
-          - os: windows-latest
-            cc: cl
-            cxx: cl
-    
-    runs-on: ${{ matrix.os }}
     
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up environment
-      shell: bash
-      run: |
-        echo "CC=${{ matrix.cc }}" >> $GITHUB_ENV
-        echo "CXX=${{ matrix.cxx }}" >> $GITHUB_ENV
-        echo "BUILD_TYPE=${{ matrix.build_type }}" >> $GITHUB_ENV
-    
-    - name: Install dependencies (Linux)
-      if: runner.os == 'Linux'
+    - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y clang cmake ninja-build
+        sudo apt-get install -y clang clang-tidy cmake ninja-build
     
-    - name: Install dependencies (Windows)
-      if: runner.os == 'Windows'
+    - name: Configure CMake
+      run: |
+        cmake -B build \
+              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+              -DCMAKE_C_COMPILER=clang \
+              -DCMAKE_CXX_COMPILER=clang++ \
+              -G Ninja
+    
+    - name: Build
+      run: |
+        cmake --build build \
+              --config ${{ matrix.build_type }} \
+              --parallel $(nproc)
+    
+    - name: Run tests
+      run: |
+        cd build
+        ctest -C ${{ matrix.build_type }} --output-on-failure
+
+  windows-msvc:
+    runs-on: windows-latest
+    
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup MSVC environment
+      uses: microsoft/setup-msbuild@v1.1
+    
+    - name: Install CMake
       run: |
         choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
         choco install ninja -y
     
     - name: Configure CMake
-      shell: bash
+      shell: cmd
       run: |
-        cmake -B ${{ runner.workspace }}/build \
-              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-              -DCMAKE_C_COMPILER=${{ matrix.cc }} \
-              -DCMAKE_CXX_COMPILER=${{ matrix.cxx }} \
-              -G Ninja
+        cmake -B build -DCMAKE_BUILD_TYPE=%BUILD_TYPE%
     
     - name: Build
-      shell: bash
+      shell: cmd
       run: |
-        cmake --build ${{ runner.workspace }}/build \
-              --config ${{ matrix.build_type }} \
-              --parallel $(nproc)
+        cmake --build build --config %BUILD_TYPE% --parallel
     
-    - name: Test
-      shell: bash
+    - name: Run tests
+      shell: cmd
       run: |
-        cd ${{ runner.workspace }}/build
-        ctest -C ${{ matrix.build_type }} --output-on-failure
+        cd build
+        ctest -C %BUILD_TYPE% --output-on-failure
+      env:
+        BUILD_TYPE: ${{ matrix.build_type }}
