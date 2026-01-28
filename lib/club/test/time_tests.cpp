@@ -62,17 +62,17 @@ TEST(TimeTests, SubtractionTest) {
 }
 
 TEST(TimeTests, InputOperatorTest) {
-  std::stringstream input;
+  std::stringstream input("12:34 09:08  invalid");
   club::Time time;
-  input.str("12:34");
-  input >> time;
+  EXPECT_TRUE(input >> time);
   EXPECT_EQ(time.hours(), 12);
   EXPECT_EQ(time.minutes(), 34);
 
-  input.str("09:08");
-  input >> time;
+  EXPECT_TRUE(input >> time);
   EXPECT_EQ(time.hours(), 9);
   EXPECT_EQ(time.minutes(), 8);
+
+  EXPECT_FALSE(input >> time);
 }
 
 TEST(TimeTests, OutputOperatorTest) {

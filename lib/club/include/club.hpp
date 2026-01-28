@@ -38,36 +38,30 @@ public:
 
   ~Club() noexcept = default;
 
-  std::pair<Event, std::optional<Event>> arrive(Time time,
-                                                const Client &client) noexcept;
+  void arrive(Time time, const Client &client) noexcept;
 
-  std::pair<Event, std::optional<Event>>
-  take_table(Time time, const Client &client, std::size_t table);
+  void take_table(Time time, const Client &client, std::size_t table);
+  void queue(Time time, const Client &client) noexcept;
 
-  std::pair<Event, std::optional<Event>> queue(Time time,
-                                               const Client &client) noexcept;
+  void leave(Time time, const Client &client) noexcept;
 
-  std::pair<Event, std::optional<Event>> leave(Time time,
-                                               const Client &client) noexcept;
+  std::vector<Event>& close() noexcept;
 
-  std::vector<Event> close() noexcept;
-
-  std::size_t revenue() const noexcept;
+  const std::vector<std::pair<Time, std::size_t>>& stats() const noexcept;
 
 private:
   Time _open_time;
   Time _close_time;
   std::size_t _free_tables_count;
   std::size_t _price;
-  std::size_t _revenue;
   std::vector<std::optional<Time>> _tables;
+  std::vector<std::pair<Time, std::size_t>> _stats;
+  std::vector<Event> _events;
   std::queue<const Client *> _queue;
   std::unordered_map<Client, std::optional<std::size_t>> _clients;
 
   void take_table_(Time time, const Client &client, std::size_t table) noexcept;
-  std::optional<std::size_t> free_table_(Time time,
-                                         const Client &client) noexcept;
-  std::optional<Event> free_table_forever_(Time time,
-                                           const Client &client) noexcept;
+  std::optional<std::size_t> free_table_(Time time, const Client &client) noexcept;
+  void free_table_forever_(Time time, const Client &client) noexcept;
 };
 } // namespace club

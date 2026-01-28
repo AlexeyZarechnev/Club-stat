@@ -28,76 +28,79 @@ std::ostream &operator<<(std::ostream &os, const Event &event) noexcept {
 Club::Club(size_t tables_count, Time open_time, Time close_time,
            std::size_t price)
     : _open_time(open_time), _close_time(close_time),
-      _free_tables_count(tables_count), _revenue(0), _price(price),
-      _tables(tables_count + 1, std::nullopt) {}
+      _free_tables_count(tables_count), _price(price),
+      _tables(tables_count + 1, std::nullopt),
+      _stats(tables_count + 1, {Time(0, 0), 0}) {}
 
-std::pair<Event, std::optional<Event>>
-Club::arrive(Time time, const Client &client) noexcept {
-  Event base = {time, 1, client};
+void Club::arrive(Time time, const Client &client) noexcept {
+  _events.emplace_back(time, 1, client);
   if (time < _open_time || time >= _close_time) {
-    return {base, Event(time, 13, "NotOpenYet")};
+    _events.emplace_back(time, 13, "NotOpenYet");
+    return;
   }
   if (_clients.find(client) != _clients.end()) {
-    return {base, Event(time, 13, "YouShallNotPass")};
+    _events.emplace_back(time, 13, "YouShallNotPass");
+    return;
   }
   _clients.insert({client, std::nullopt});
-  return {base, std::nullopt};
 }
 
-std::pair<Event, std::optional<Event>>
-Club::take_table(Time time, const Client &client, std::size_t table) {
-  Event base = {time, 2, client, table};
+void Club::take_table(Time time, const Client &client, std::size_t table) {
+  _events.emplace_back(time, 2, client, table);
   if (!_clients.contains(client)) {
-    return {base, Event(time, 13, "ClientUnknown")};
+    _events.emplace_back(time, 13, "ClientUnknown");
+    return;
   }
   if (_tables[table]) {
-    return {base, Event(time, 13, "PlaceIsBusy")};
+    _events.emplace_back(time, 13, "PlaceIsBusy");
+    return;
   }
   free_table_(time, client);
   take_table_(time, client, table);
-  return {base, std::nullopt};
 }
 
-std::pair<Event, std::optional<Event>>
-Club::queue(Time time, const Client &client) noexcept {
-  Event base = {time, 3, client};
+void Club::queue(Time time, const Client &client) noexcept {
+  _events.emplace_back(time, 3, client);
   if (!_clients.contains(client)) {
-    return {base, Event(time, 13, "ClientUnknown")};
+    _events.emplace_back(time, 13, "ClientUnknown");
+    return;
   }
   if (_clients[client]) {
-    return {base, Event(time, 13, "YouAlreadyHaveTable")};
+    _events.emplace_back(time, 13, "YouAlreadyHaveTable");
+    return;
   }
   if (_free_tables_count > 0) {
-    return {base, Event(time, 13, "ICanWaitNoLonger")};
+    _events.emplace_back(time, 13, "ICanWaitNoLonger!");
+    return;
   }
   if (_queue.size() >= _tables.size()) {
-    return {base, Event(time, 11, client)};
+    _events.emplace_back(time, 11, client);
+    return;
   }
   _queue.push(&_clients.find(client)->first);
-  return {base, std::nullopt};
 }
 
-std::pair<Event, std::optional<Event>>
-Club::leave(Time time, const Client &client) noexcept {
-  Event base = {time, 4, client};
+void Club::leave(Time time, const Client &client) noexcept {
+  _events.emplace_back(time, 4, client);
   if (!_clients.contains(client)) {
-    return {base, Event(time, 13, "ClientUnknown")};
+    _events.emplace_back(time, 13, "ClientUnknown");
+    return;
   }
-  auto event = free_table_forever_(time, client);
+  free_table_forever_(time, client);
   _clients.erase(client);
-  return {base, event};
 }
 
-std::vector<Event> Club::close() noexcept {
-  std::vector<Event> closed_events;
+std::vector<Event>& Club::close() noexcept {
   for (auto &[client, table_opt] : _clients) {
     free_table_(_close_time, client);
-    closed_events.emplace_back(_close_time, 4, client);
+    _events.emplace_back(_close_time, 11, client);
   }
-  return closed_events;
+  return _events;
 }
 
-std::size_t Club::revenue() const noexcept { return _revenue; }
+const std::vector<std::pair<Time, std::size_t>>& Club::stats() const noexcept {
+  return _stats;
+}
 
 void Club::take_table_(Time time, const Client &client,
                        std::size_t table) noexcept {
@@ -112,7 +115,8 @@ std::optional<std::size_t> Club::free_table_(Time time,
   if (it != _clients.end() && it->second) {
     std::size_t table = *it->second;
     Time elapsed = time - *_tables[table];
-    _revenue += elapsed.ceil() * _price;
+    _stats[table].first += elapsed;
+    _stats[table].second += elapsed.ceil() * _price;
     _tables[table] = std::nullopt;
     it->second = std::nullopt;
     _free_tables_count++;
@@ -121,16 +125,14 @@ std::optional<std::size_t> Club::free_table_(Time time,
   return std::nullopt;
 }
 
-std::optional<Event> Club::free_table_forever_(Time time,
-                                               const Client &client) noexcept {
+void Club::free_table_forever_(Time time, const Client &client) noexcept {
   std::size_t table = *free_table_(time, client);
   if (!_queue.empty()) {
     const Client *next_client = _queue.front();
     _queue.pop();
     take_table_(time, *next_client, table);
-    return Event(time, 12, *next_client, table);
+    _events.emplace_back(time, 12, *next_client, table);
   }
-  return std::nullopt;
 }
 
 } // namespace club

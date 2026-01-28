@@ -1,21 +1,19 @@
 #include "time.hpp"
+#include <cctype>
 #include <sys/types.h>
 
 namespace club {
 
 std::istream &operator>>(std::istream &is, Time &time) noexcept {
-  uint16_t hours;
-  uint16_t minutes;
-  auto input = [&](uint16_t &dst) {
-    char ch;
-    is >> ch;
-    dst = static_cast<uint16_t>(ch - '0') * 10;
-    is >> ch;
-    dst += static_cast<uint16_t>(ch - '0');
-  };
-  input(hours);
-  is.ignore(); // skip ':'
-  input(minutes);
+  std::string input;
+  is >> input;
+
+  if (input.size() != 5 || input[2] != ':') {
+    is.setstate(std::ios::failbit);
+    return is;
+  }
+  int hours = (input[0] - '0') * 10 + (input[1] - '0');
+  int minutes = (input[3] - '0') * 10 + (input[4] - '0');
   time = Time(hours, minutes);
   return is;
 }

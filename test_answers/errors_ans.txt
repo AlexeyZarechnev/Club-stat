@@ -1,0 +1,21 @@
+09:00
+09:01 1 client1
+09:02 1 client1
+09:02 13 YouShallNotPass
+09:03 2 client2 1
+09:03 13 ClientUnknown
+09:04 2 client1 1
+09:05 1 client2
+09:06 2 client1 2
+09:07 4 client3
+09:07 13 ClientUnknown
+09:08 3 client1
+09:08 13 YouAlreadyHaveTable
+09:09 1 client3
+09:10 2 client3 1
+18:00 11 client2
+18:00 11 client3
+18:00 11 client1
+18:00
+1 200 08:52
+2 180 08:54
