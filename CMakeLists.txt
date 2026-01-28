@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0.0)
+cmake_minimum_required(VERSION 3.24)
 project(
     club-stat
     VERSION 2.0.0
