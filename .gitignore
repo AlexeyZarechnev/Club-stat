@@ -3,6 +3,10 @@ build/
 
 # IDE files
 .vscode/
+.clangd
 
 # cache files
 .cache/
+
+# MacOS files
+.DS_Store
