@@ -1,6 +1,8 @@
 #pragma once
 
 #include "time.hpp"
+
+#include <optional>
 #include <ostream>
 #include <queue>
 #include <unordered_map>
@@ -41,13 +43,14 @@ public:
   void arrive(Time time, const Client &client) noexcept;
 
   void take_table(Time time, const Client &client, std::size_t table);
+  
   void queue(Time time, const Client &client) noexcept;
 
   void leave(Time time, const Client &client) noexcept;
 
-  std::vector<Event>& close() noexcept;
+  std::vector<Event> &close() noexcept;
 
-  const std::vector<std::pair<Time, std::size_t>>& stats() const noexcept;
+  const std::vector<std::pair<Time, std::size_t>> &stats() const noexcept;
 
 private:
   Time _open_time;
@@ -61,7 +64,8 @@ private:
   std::unordered_map<Client, std::optional<std::size_t>> _clients;
 
   void take_table_(Time time, const Client &client, std::size_t table) noexcept;
-  std::optional<std::size_t> free_table_(Time time, const Client &client) noexcept;
+  std::optional<std::size_t> free_table_(Time time,
+                                         const Client &client) noexcept;
   void free_table_forever_(Time time, const Client &client) noexcept;
 };
 } // namespace club

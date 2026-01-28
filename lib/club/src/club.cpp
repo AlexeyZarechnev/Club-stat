@@ -90,7 +90,7 @@ void Club::leave(Time time, const Client &client) noexcept {
   _clients.erase(client);
 }
 
-std::vector<Event>& Club::close() noexcept {
+std::vector<Event> &Club::close() noexcept {
   for (auto &[client, table_opt] : _clients) {
     free_table_(_close_time, client);
     _events.emplace_back(_close_time, 11, client);
@@ -98,7 +98,7 @@ std::vector<Event>& Club::close() noexcept {
   return _events;
 }
 
-const std::vector<std::pair<Time, std::size_t>>& Club::stats() const noexcept {
+const std::vector<std::pair<Time, std::size_t>> &Club::stats() const noexcept {
   return _stats;
 }
 

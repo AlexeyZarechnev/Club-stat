@@ -88,8 +88,7 @@ int main(int argc, char **argv) {
   std::cout << close_time << '\n';
   auto &stats = club.stats();
   for (std::size_t i = 1; i < stats.size(); ++i) {
-    std::cout << i << " " << stats[i].second << " "
-              << stats[i].first << "\n";
+    std::cout << i << " " << stats[i].second << " " << stats[i].first << "\n";
   }
   return EXIT_SUCCESS;
 }
