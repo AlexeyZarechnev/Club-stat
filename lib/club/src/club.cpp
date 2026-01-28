@@ -126,12 +126,12 @@ std::optional<std::size_t> Club::free_table_(Time time,
 }
 
 void Club::free_table_forever_(Time time, const Client &client) noexcept {
-  std::size_t table = *free_table_(time, client);
-  if (!_queue.empty()) {
+  auto table = free_table_(time, client);
+  if (table && !_queue.empty()) {
     const Client *next_client = _queue.front();
     _queue.pop();
-    take_table_(time, *next_client, table);
-    _events.emplace_back(time, 12, *next_client, table);
+    take_table_(time, *next_client, *table);
+    _events.emplace_back(time, 12, *next_client, *table);
   }
 }
 
