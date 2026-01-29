@@ -29,5 +29,15 @@
         "NEED_SANITIZED": "ON"
       }
     }
+  ],
+  "buildPresets": [
+    {
+      "name": "Debug",
+      "configurePreset": "Debug"
+    },
+    {
+      "name": "Release",
+      "configurePreset": "Release"
+    }
   ]
 }
