@@ -3,12 +3,14 @@
 #include <fstream>
 #include <ios>
 #include <iostream>
+#include <regex>
 #include <sstream>
 #include <string>
 
 #include "club.hpp"
 
 constexpr static const char *USAGE = "club-stat <input_file>";
+static std::regex CLIENT_REGEX("([a-z0-9\\-_]+)");
 
 int main(int argc, char **argv) {
   if (argc != 2) {
@@ -25,32 +27,34 @@ int main(int argc, char **argv) {
   std::size_t tables_count;
   std::getline(input, ev);
   sstream = std::stringstream(ev);
-  if (!(sstream >> tables_count)) {
+  if (!(sstream >> tables_count) || !sstream.eof()) {
     std::cerr << ev;
     return EXIT_FAILURE;
   }
   club::Time open_time, close_time;
   std::getline(input, ev);
   sstream = std::stringstream(ev);
-  if (!(sstream >> open_time >> close_time)) {
+  if (!(sstream >> open_time >> close_time) || !sstream.eof()) {
     std::cerr << ev;
     return EXIT_FAILURE;
   }
   std::size_t price;
   std::getline(input, ev);
   sstream = std::stringstream(ev);
-  if (!(sstream >> price)) {
+  if (!(sstream >> price) || !sstream.eof()) {
     std::cerr << ev;
     return EXIT_FAILURE;
   }
   club::Club club(tables_count, open_time, close_time, price);
+  club::Time prev_time(0, 0);
   club::Time ev_time;
   std::size_t ev_id;
   std::string ev_name;
   std::size_t ev_table_id;
   while (std::getline(input, ev)) {
     sstream = std::stringstream(ev);
-    if (!(sstream >> ev_time >> ev_id >> ev_name)) {
+    if (!(sstream >> ev_time >> ev_id >> ev_name) ||
+        !std::regex_match(ev_name, CLIENT_REGEX) || ev_time < prev_time) {
       std::cerr << ev;
       return EXIT_FAILURE;
     }
@@ -79,6 +83,11 @@ int main(int argc, char **argv) {
       std::cerr << ev;
       return EXIT_FAILURE;
     }
+    if (!sstream.eof()) {
+      std::cerr << ev;
+      return EXIT_FAILURE;
+    }
+    prev_time = ev_time;
   }
   std::cout << open_time << '\n';
   auto &events = club.close();

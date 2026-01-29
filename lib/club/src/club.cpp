@@ -17,6 +17,11 @@ Event::Event(Time time, std::size_t id, const std::string &name,
              std::size_t table_id) noexcept
     : time(time), id(id), name(name), table_id(table_id) {}
 
+bool operator==(const Event &lhs, const Event &rhs) noexcept {
+  return lhs.id == rhs.id && lhs.name == rhs.name && lhs.time == rhs.time &&
+         lhs.table_id == rhs.table_id;
+}
+
 std::ostream &operator<<(std::ostream &os, const Event &event) noexcept {
   os << event.time << " " << event.id << " " << event.name;
   if (event.table_id) {
@@ -38,7 +43,7 @@ void Club::arrive(Time time, const Client &client) noexcept {
     _events.emplace_back(time, 13, "NotOpenYet");
     return;
   }
-  if (_clients.find(client) != _clients.end()) {
+  if (_clients.contains(client)) {
     _events.emplace_back(time, 13, "YouShallNotPass");
     return;
   }
@@ -73,8 +78,11 @@ void Club::queue(Time time, const Client &client) noexcept {
     _events.emplace_back(time, 13, "ICanWaitNoLonger!");
     return;
   }
-  if (_queue.size() >= _tables.size()) {
+  if (_queue.size() >=
+      _tables.size() -
+          1) { // tables.size() - 1 == tables_count + 1 - 1 == tables_count
     _events.emplace_back(time, 11, client);
+    _clients.erase(client);
     return;
   }
   _queue.push(&_clients.find(client)->first);

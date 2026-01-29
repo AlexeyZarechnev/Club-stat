@@ -19,6 +19,9 @@ struct Event {
   Event(Time time, std::size_t id, const std::string &name,
         std::size_t table_id) noexcept;
 
+  friend bool operator==(const Event &lhs, const Event &rhs) noexcept;
+  friend bool operator!=(const Event &lhs, const Event &rhs) noexcept = default;
+
   Time time;
   std::size_t id;
   std::string name;
@@ -43,7 +46,7 @@ public:
   void arrive(Time time, const Client &client) noexcept;
 
   void take_table(Time time, const Client &client, std::size_t table);
-  
+
   void queue(Time time, const Client &client) noexcept;
 
   void leave(Time time, const Client &client) noexcept;
