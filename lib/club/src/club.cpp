@@ -1,4 +1,5 @@
 #include "club.hpp"
+#include <algorithm>
 #include <optional>
 #include <utility>
 
@@ -99,10 +100,13 @@ void Club::leave(Time time, const Client &client) noexcept {
 }
 
 std::vector<Event> &Club::close() noexcept {
+  std::vector<Event> last;
   for (auto &[client, table_opt] : _clients) {
     free_table_(_close_time, client);
-    _events.emplace_back(_close_time, 11, client);
+    last.emplace_back(_close_time, 11, client);
   }
+  std::sort(last.begin(), last.end(),
+            [](auto &lhs, auto &rhs) { return lhs.name < rhs.name; });
   return _events;
 }
 
