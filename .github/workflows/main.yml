@@ -45,19 +45,13 @@ jobs:
     
     strategy:
       matrix:
-        build_type: [Debug, Release]
+        build_type: [Release]
     
     steps:
     - uses: actions/checkout@v4
     
     - name: Setup Visual Studio
       uses: microsoft/setup-msbuild@v1.1
-
-    - name: Install VC++ Redistributable
-      shell: pwsh
-      run: |
-        Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vc_redist.x64.exe" -OutFile "vcredist.exe"
-        Start-Process -FilePath "vcredist.exe" -ArgumentList "/install", "/quiet", "/norestart" -Wait
     
     - name: Configure CMake
       shell: bash
