@@ -54,10 +54,10 @@ jobs:
       uses: microsoft/setup-msbuild@v1.1
 
     - name: Install VC++ Redistributable
-      shell: bash
+      shell: pwsh
       run: |
-        curl -L -o vcredist.exe https://aka.ms/vs/17/release/vc_redist.x64.exe
-        vcredist.exe /install /quiet /norestart
+        Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vc_redist.x64.exe" -OutFile "vcredist.exe"
+        Start-Process -FilePath "vcredist.exe" -ArgumentList "/install", "/quiet", "/norestart" -Wait
     
     - name: Configure CMake
       shell: bash
