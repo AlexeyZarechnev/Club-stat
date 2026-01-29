@@ -25,22 +25,21 @@ jobs:
     
     - name: Configure CMake
       run: |
-        cmake -B build \
-              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+        cmake --preset ${{ matrix.build_type }} \
               -DCMAKE_C_COMPILER=clang \
               -DCMAKE_CXX_COMPILER=clang++ \
               -G Ninja
     
     - name: Build
       run: |
-        cmake --build build \
-              --config ${{ matrix.build_type }} \
+        cmake --build build/${{ matrix.build_type }} \
+              --preset ${{ matrix.build_type }} \
               --parallel $(nproc)
     
     - name: Run tests
       run: |
-        cd build
-        ctest -C ${{ matrix.build_type }} --output-on-failure
+        cd build/${{ matrix.build_type }}
+        ctest --output-on-failure
 
   windows-msvc:
     runs-on: windows-latest
@@ -58,21 +57,21 @@ jobs:
     - name: Configure CMake
       shell: bash
       run: |
-        cmake -B build \
+        cmake --preset ${{ matrix.build_type }}
               -G "Visual Studio 17 2022" \
               -A x64
     
     - name: Build
       shell: bash
       run: |
-        cmake --build build \
-              --config ${{ matrix.build_type }} \
+        cmake --build build/${{ matrix.build_type }} \
+              --preset ${{ matrix.build_type }} \
               --parallel
     
     - name: Run tests
       shell: bash
       run: |
-        cd build
-        ctest -C ${{ matrix.build_type }} --output-on-failure
+        cd build/${{ matrix.build_type }}
+        ctest --output-on-failure
       env:
         BUILD_TYPE: ${{ matrix.build_type }}
