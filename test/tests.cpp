@@ -180,9 +180,9 @@ TEST(ValidTests, ErrorsTest) {
 09:08 13 YouAlreadyHaveTable
 09:09 1 client3
 09:10 2 client3 1
+18:00 11 client1
 18:00 11 client2
 18:00 11 client3
-18:00 11 client1
 18:00
 1 200 08:52
 2 180 08:54
