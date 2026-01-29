@@ -52,6 +52,12 @@ jobs:
     
     - name: Setup Visual Studio
       uses: microsoft/setup-msbuild@v1.1
+
+    - name: Install VC++ Redistributable
+      shell: bash
+      run: |
+        curl -L -o vcredist.exe https://aka.ms/vs/17/release/vc_redist.x64.exe
+        vcredist.exe /install /quiet /norestart
     
     - name: Configure CMake
       shell: bash
