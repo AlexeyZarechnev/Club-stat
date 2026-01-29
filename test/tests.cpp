@@ -37,13 +37,8 @@ void test(const std::string &input, const std::string &expected_output,
   std::ofstream file(input_file);
   file << input;
   file.close();
-  #if defined(_WIN32) || defined(_WIN64)
-  std::string output =
-      exec_with_tmp_file("club-stat.exe " + input_file.string(), checker);
-  #else
   std::string output =
       exec_with_tmp_file("./club-stat " + input_file.string(), checker);
-  #endif
   EXPECT_EQ(output, expected_output);
 }
 

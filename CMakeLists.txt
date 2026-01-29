@@ -9,7 +9,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 enable_testing()
 
@@ -44,5 +43,6 @@ target_link_libraries(
     GTest::gtest
     GTest::gtest_main
 )  
-
-gtest_discover_tests(main_tests)
+if (!DISABLE_MAIN_TESTS) 
+    gtest_discover_tests(main_tests)
+endif()
