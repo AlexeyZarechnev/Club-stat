@@ -107,6 +107,9 @@ std::vector<Event> &Club::close() noexcept {
   }
   std::sort(last.begin(), last.end(),
             [](auto &lhs, auto &rhs) { return lhs.name < rhs.name; });
+  for (int i = 0; i < last.size(); ++i) {
+    _events.emplace_back(std::move(last[i]));
+  }
   return _events;
 }
 
