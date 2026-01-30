@@ -10,7 +10,10 @@
       "name": "Base",
       "description": "General preset that applies to all configurations",
       "hidden": true,
-      "binaryDir": "${sourceDir}/build/${presetName}"
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "DISABLE_MAIN_TESTS": "OFF"
+      }
     },
     {
       "name": "Release",
