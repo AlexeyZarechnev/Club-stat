@@ -11,16 +11,14 @@
       "description": "General preset that applies to all configurations",
       "hidden": true,
       "binaryDir": "${sourceDir}/build/${presetName}",
-      "cacheVariables": {
-        "DISABLE_MAIN_TESTS": "OFF"
-      }
     },
     {
       "name": "Release",
       "description": "Release build",
       "inherits": "Base",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_MAIN_TESTS": "ON"
       }
     },
     {
@@ -29,6 +27,7 @@
       "inherits": "Base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_MAIN_TESTS": "ON",
         "NEED_SANITIZED": "ON"
       }
     }
