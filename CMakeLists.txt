@@ -43,6 +43,5 @@ target_link_libraries(
     GTest::gtest
     GTest::gtest_main
 )  
-if (!DISABLE_MAIN_TESTS) 
-    gtest_discover_tests(main_tests)
-endif()
+
+gtest_discover_tests(main_tests)
